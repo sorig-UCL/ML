@@ -243,7 +243,8 @@ hold off\end{lstlisting}
     We see that the minimizer of $\mathbf{c}_k$ is equivalent to the centroid of the cluster.
     
 \subsection{Proof of convergence in finite amount of steps}
-
+    We know that the k-means algorithm converges but we do not know if it does so in finitely or infinitely many steps. Here we show that the k-means algorithm does indeed converge in finitely many steps.
+    \par \textbf{Proof:} The k-means algorithm stops once there is no longer any improvement in the clustering. It will therefore never reach the same clustering twice. Each possible k-clustering of the input consists of k subsets. The number of subsets of the input is a finite number and the number of k subsets of the input is bounded above by this. Consequently, there is a finite number of possible clusterings. Hence the k-means algorithm will terminate after a finite number of iterations.
 \section{Extension}
 \subsection{k-means segmentation}
 
