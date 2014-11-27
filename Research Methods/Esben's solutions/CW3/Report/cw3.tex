@@ -2,6 +2,7 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{color}
+\usepackage{amsmath}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -186,10 +187,61 @@ stddeviationerror =
     0.0155\end{lstlisting}
 
 \section{Questions}
-\subsection{Dataset with local minima}
+\subsection{Dataset with local minima} We can easily construct a dataset on which our k-means algorithm has local minima. An example of such a dataset is the set $\{ (0,0), (2,0), (-1, 4), (3, 4) \}$. This is clear if we plot the data.
+    \begin{lstlisting}
+X = [0, 0; 2,0; -1 4; 3 4];
+
+hold on
+axis([-2 5 -1 5]);
+scatter(X(:, 1), X(:, 2));\end{lstlisting}
+    Which gives the plot:
+    \begin{center}
+    \includegraphics[width=\linewidth]{localminimapoints}
+    \end{center}
+    
+    Running k-means on this dataset will converge in one of two local minima. We run the algorithm twice and plot the centers of the clusters: (in order to get two different results, this code may have to be run several times)
+    
+    \begin{lstlisting}
+[clustering1, centers1] = mykmeans(X, 2);
+[clustering2, centers2] = mykmeans(X, 2);
+legend('Data');
+
+scatter(centers1(:, 1), centers1(:, 2));
+scatter(centers2(:, 1), centers2(:, 2));
+
+legend('Data', 'Minimum 1 centers', 'Miinimum 2 centers');
+hold off\end{lstlisting}
+
+    Which produces:
+    
+    \begin{center}
+    \includegraphics[width=\linewidth]{localminima}
+    \end{center}
+    
+    Here we clearly see the two local minima of the convergence on the four data points.
 
 \subsection{Argument that the centroid is the minimizer of the sum of squared distances}
-
+    We can minimize the summed squared error
+    
+    \begin{equation}
+        SSE = \sum_{i=1}^k \sum_{\mathbf{x} \in C_i} ||\mathbf{x} - \mathbf{c}_i||^2 
+        = \sum_{i=1}^k \sum_{\mathbf{x} \in C_i} (\mathbf{x} - \mathbf{c}_i)^2
+    \end{equation}
+    
+    for the $k^{th}$ centroid by setting the derivative with respect to the $k^{th}$ centroid equal to zero.
+    
+    \begin{equation}
+    \begin{split}
+        \frac{\delta}{\delta \mathbf{c}_k} \sum_{i=1}^k \sum_{\mathbf{x} \in C_i} (\mathbf{x} - \mathbf{c}_i)^2
+        &= \sum_{i=1}^k \sum_{\mathbf{x} \in C_i}  \frac{\delta}{\delta \mathbf{c}_k} (\mathbf{x} - \mathbf{c}_i)^2\\
+        &= \sum_{\mathbf{x} \in C_k} 2(\mathbf{x}_k - \mathbf{c}_k) = 0\\
+        \implies \sum_{\mathbf{x} \in C_k} \mathbf{c}_k &= \sum_{\mathbf{x} \in C_k} \mathbf{x}_k\\
+        \implies \mathbf{c}_k &= \frac{1}{\sum_{\mathbf{x} \in C_k} 1} \sum_{\mathbf{x} \in C_k} \mathbf{x}_k
+    \end{split}
+    \end{equation}
+    
+    We see that the minimizer of $\mathbf{c}_k$ is equivalent to the centroid of the cluster.
+    
 \subsection{Proof of convergence in finite amount of steps}
 
 \section{Extension}

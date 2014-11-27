@@ -184,3 +184,21 @@ end
 
 mean = mean(errors)
 stddeviation = std(errors)
+
+%% 2.1)
+X = [0, 0; 2,0; -1 4; 3 4];
+
+hold on
+axis([-2 5 -1 5]);
+scatter(X(:, 1), X(:, 2));
+
+[clustering1, centers1] = mykmeans(X, 2);
+[clustering2, centers2] = mykmeans(X, 2);
+legend('Data');
+
+%%
+scatter(centers1(:, 1), centers1(:, 2));
+scatter(centers2(:, 1), centers2(:, 2));
+
+legend('Data', 'Minimum 1 centers', 'Miinimum 2 centers');
+hold off
