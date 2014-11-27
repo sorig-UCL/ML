@@ -66,6 +66,7 @@ domain = [0:0.01:1];
 range = arrayfun(func, domain);
 plot(domain, range, '--r');
 scatter(SX, SY);
+legend('Underlying function', 'Noisy Samples');
 
 %% ii)
 fit2 = applybasis(SX, polybasis(2))\SY;
@@ -79,6 +80,7 @@ plot(domain, applyfit(domain, polybasis(5), fit5));
 plot(domain, applyfit(domain, polybasis(10), fit10));
 plot(domain, applyfit(domain, polybasis(14), fit14));
 plot(domain, applyfit(domain, polybasis(18), fit18));
+legend('Underlying function', 'Noisy Samples', 'k = 2', 'k = 5', 'k = 10', 'k = 14', 'k = 18');
 hold off
 
 %% c)
@@ -94,6 +96,7 @@ end
 figure 
 hold on
 plot(ks, log(errors));
+legend('log(te_k)');
 
 %% d)
 TX = rand([1000 1]);
@@ -113,6 +116,7 @@ ks = [1:18];
 errors = arrayfun(@(k) tsek(SX, SY, TX, TY, k), ks);
 
 plot(ks, log(errors));
+legend('log(te_k)', 'log(tse_k)');
 hold off
 
 %% e)
@@ -141,6 +145,7 @@ figure
 hold on
 plot(ks, log(avgtrainerror));
 plot(ks, log(avgtesterror));
+legend('log(avg. training error)', 'log(avg. test error)');
 hold off
 
 %% 3.
@@ -168,6 +173,7 @@ figure
 hold on
 plot(ks, log(trainerrors));
 plot(ks, log(testerrors));
+legend('log(te_k)', 'log(tse_k)');
 hold off
 
 %% e)
@@ -196,4 +202,5 @@ figure
 hold on
 plot(ks, log(avgtrainerror));
 plot(ks, log(avgtesterror));
+legend('log(avg. training error)', 'log(avg. test error)');
 hold off
