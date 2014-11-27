@@ -1,4 +1,4 @@
-function result = mykmeans(X, k)
+function [clusterings, centers] = mykmeans(X, k)
     % Randomly initialize centers of clusters
     c = datasample(X, k, 'Replace', false);
     r = repmat(0, size(X, 1), k);
@@ -34,6 +34,7 @@ function result = mykmeans(X, k)
         end
     end
     
+    centers = c;
     % Output formatting (vector with cluster index for each row in X)
     clustering = repmat(0, size(X,1), 1);
     for i = 1:size(X,1)
@@ -45,5 +46,5 @@ function result = mykmeans(X, k)
        end
     end
    
-    result = clustering;
+    clusterings = clustering;
 end
