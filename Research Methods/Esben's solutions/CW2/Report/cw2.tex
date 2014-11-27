@@ -1,6 +1,33 @@
 \documentclass[11pt]{article}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage{color}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
 
 \begin{document}
 \lstset{language=Matlab}
@@ -40,8 +67,7 @@ plot(domain, applyfit(domain, polybasis(2), fit2));
 plot(domain, applyfit(domain, polybasis(3), fit3));
 plot(domain, applyfit(domain, polybasis(4), fit4));
 
-hold off
-        \end{lstlisting}
+hold off\end{lstlisting}
         
         Which produces the plot
         \begin{center}
@@ -64,8 +90,7 @@ fit4 =
    -5.0000
    15.1667
    -8.5000
-    1.3333
-        \end{lstlisting}
+    1.3333\end{lstlisting}
         That is,\\
         for $k=1$ the fit is $2.5$,\\
         for $k=2$ the fit is $0.4 + 1.5x$,\\
@@ -78,8 +103,7 @@ mymse = @(X, w, y) (X*w - y).' * (X*w - y) / size(X, 1);
 mse1 = mymse(applybasis(X, polybasis(1)), fit1, y)
 mse2 = mymse(applybasis(X, polybasis(2)), fit2, y)
 mse3 = mymse(applybasis(X, polybasis(3)), fit3, y)
-mse4 = mymse(applybasis(X, polybasis(4)), fit4, y)
-        \end{lstlisting}
+mse4 = mymse(applybasis(X, polybasis(4)), fit4, y)\end{lstlisting}
         Which produces:
         \begin{lstlisting}
 mse1 =
@@ -89,8 +113,7 @@ mse2 =
 mse3 =
     0.8000
 mse4 =
-   5.1473e-29
-        \end{lstlisting}       
+   5.1473e-29\end{lstlisting}       
         
 \end{itemize}
 
@@ -100,8 +123,7 @@ mse4 =
         We can write the function simply as (the anonymous function):
         \begin{lstlisting}
 % normaldist enables us to sample from any normal distribution
-normaldist = @(mean, stddeviation) randn(1)*stddeviation + mean;
-        \end{lstlisting}
+normaldist = @(mean, stddeviation) randn(1)*stddeviation + mean;\end{lstlisting}
         
     \item[b)]
         \begin{itemize}
@@ -130,8 +152,7 @@ domain = [0:0.01:1];
 range = arrayfun(func, domain);
 plot(domain, range, '--r');
 scatter(SX, SY);
-legend('Underlying function', 'Noisy Samples');
-                \end{lstlisting}
+legend('Underlying function', 'Noisy Samples');\end{lstlisting}
                 Which produces the plot
                 \begin{center}
                 \includegraphics[width=\linewidth]{2ai}
@@ -151,8 +172,7 @@ plot(domain, applyfit(domain, polybasis(10), fit10));
 plot(domain, applyfit(domain, polybasis(14), fit14));
 plot(domain, applyfit(domain, polybasis(18), fit18));
 legend('Underlying function', 'Noisy Samples', 'Degree 2 polynomial', 'Degree 5 polynomial', 'Degree 10 polynomial', 'Degree 14 polynomial', 'Degree 18 polynomial');
-hold off
-                \end{lstlisting}
+hold off\end{lstlisting}
                 Which produces the plot
                 \begin{center}
                     \includegraphics[width=\linewidth]{2aii}
@@ -176,8 +196,7 @@ end
 
 figure 
 hold on
-plot(ks, log(errors));
-        \end{lstlisting}
+plot(ks, log(errors));\end{lstlisting}
         
         Which produces the plot
         \begin{center}
@@ -205,8 +224,7 @@ errors = arrayfun(@(k) tsek(SX, SY, TX, TY, k), ks);
 
 plot(ks, log(errors));
 legend('log(te_k)', 'log(tse_k)');
-hold off
-        \end{lstlisting}
+hold off\end{lstlisting}
         
         This gives us the plot
         \begin{center}
@@ -243,8 +261,7 @@ hold on
 plot(ks, log(avgtrainerror));
 plot(ks, log(avgtesterror));
 legend('Avg. training error', 'Avg. test error');
-hold off
-        \end{lstlisting}
+hold off\end{lstlisting}
 
         This produces the plot
         \begin{center}
@@ -283,8 +300,7 @@ hold on
 plot(ks, log(trainerrors));
 plot(ks, log(testerrors));
 legend('log(te_k)', 'log(tse_k)');
-hold off
-    \end{lstlisting}
+hold off\end{lstlisting}
     This produces the plot
     \begin{center}
         \includegraphics[width=\linewidth]{3cd}
@@ -318,8 +334,7 @@ hold on
 plot(ks, log(avgtrainerror));
 plot(ks, log(avgtesterror));
 legend('Avg. training error', 'Avg. test error');
-hold off
-        \end{lstlisting}
+hold off\end{lstlisting}
         Which produces the plot
         \begin{center}
             \includegraphics[width=\linewidth]{3e}
@@ -341,8 +356,7 @@ function sol = applybasis(X, basis)
     for i = 1:size(basis, 2)
         sol = [sol arrayfun(basis{i}, X)];
     end
-end
-        \end{lstlisting}
+end\end{lstlisting}
     
     \subsection{Implementation of applyfit}
         \begin{lstlisting}
@@ -354,8 +368,7 @@ function sol = applyfit(X, basis, coefficients)
     for i = 1:size(basis, 2)
         sol = sol + coefficients(i) * basis{i}(X);
     end
-end
-        \end{lstlisting}
+end\end{lstlisting}
     
     \subsection{Implementation of polybasis}
         \begin{lstlisting}
@@ -367,8 +380,7 @@ function basis = polybasis(k)
     else
         basis = [polybasis(k-1), {@(x) x.^(k-1)}];
     end
-end
-        \end{lstlisting}
+end\end{lstlisting}
     
     \subsection{Implementatino of sinbasis} \label{appendix:sinbasis}
         \begin{lstlisting}
@@ -379,8 +391,7 @@ function basis = sinbasis(k)
     else
         basis = [sinbasis(k-1), {@(x) sin(k*pi*x)}];
     end
-end
-        \end{lstlisting}
+end\end{lstlisting}
 
 
 \end{document}
