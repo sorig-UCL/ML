@@ -202,3 +202,20 @@ scatter(centers2(:, 1), centers2(:, 2));
 
 legend('Data', 'Minimum 1 centers', 'Miinimum 2 centers');
 hold off
+
+%% Segmentation algorithm
+s = RandStream('mcg16807','Seed',0);
+RandStream.setGlobalStream(s);
+X = genData2;
+is = segmentation(X, 3);
+
+hold on
+plot(X(:,1), X(:, 2));
+scatter(X(1, 1), X(1, 2), 'blackx');
+augmentedis = [0 is size(X, 1)];
+for i = 2:size(augmentedis, 2)
+    segment = X((augmentedis(i-1)+1):augmentedis(i), :);
+    scatter(segment(:, 1), segment(:, 2));
+end
+    
+hold off

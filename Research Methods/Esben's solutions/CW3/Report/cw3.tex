@@ -234,9 +234,9 @@ hold off\end{lstlisting}
     \begin{split}
         \frac{\delta}{\delta \mathbf{c}_k} \sum_{i=1}^k \sum_{\mathbf{x} \in C_i} (\mathbf{x} - \mathbf{c}_i)^2
         &= \sum_{i=1}^k \sum_{\mathbf{x} \in C_i}  \frac{\delta}{\delta \mathbf{c}_k} (\mathbf{x} - \mathbf{c}_i)^2\\
-        &= \sum_{\mathbf{x} \in C_k} 2(\mathbf{x}_k - \mathbf{c}_k) = 0\\
-        \implies \sum_{\mathbf{x} \in C_k} \mathbf{c}_k &= \sum_{\mathbf{x} \in C_k} \mathbf{x}_k\\
-        \implies \mathbf{c}_k &= \frac{1}{\sum_{\mathbf{x} \in C_k} 1} \sum_{\mathbf{x} \in C_k} \mathbf{x}_k
+        &= \sum_{\mathbf{x} \in C_k} 2(\mathbf{x} - \mathbf{c}_k) = 0\\
+        \implies \sum_{\mathbf{x} \in C_k} \mathbf{c}_k &= \sum_{\mathbf{x} \in C_k} \mathbf{x}\\
+        \implies \mathbf{c}_k &= \frac{1}{\sum_{\mathbf{x} \in C_k} 1} \sum_{\mathbf{x} \in C_k} \mathbf{x}
     \end{split}
     \end{equation}
     
