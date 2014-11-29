@@ -3,6 +3,9 @@
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage{amsmath}
+\usepackage{amsfonts}
+
+\DeclareMathOperator*{\argmin}{argmin}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -247,6 +250,53 @@ hold off\end{lstlisting}
     \par \textbf{Proof:} The k-means algorithm stops once there is no longer any improvement in the clustering. It will therefore never reach the same clustering twice. Each possible k-clustering of the input consists of k subsets. The number of subsets of the input is a finite number and the number of k subsets of the input is bounded above by this. Consequently, there is a finite number of possible clusterings. Hence the k-means algorithm will terminate after a finite number of iterations.
 \section{Extension}
 \subsection{k-means segmentation}
+
+    The objective of the algorithm is to find the segmentation $\{i_1, ..., i_{k-1}\}$ of a sequence of points $\{\mathbf{x}_1, ..., \mathbf{x}_l\} \in \mathbb{R}^n$ that is the global minimum of the following optimisation problem:
+    
+    \begin{equation}
+        \argmin_{i_1, ..., i_{k-1}; \mathbf{c}_1, ..., \mathbf{c}_k} \sum_{j=1}^k \sum_{p=i_{j-1} + 1}^{i_j} ||\mathbf{x}_p - \mathbf{c}_j ||^2
+    \end{equation}
+    
+    The algorithm must run in polynomial time in $l$, $n$, and $k$. We start by defining the error function as it will be useful when searching for minima of in the error.
+    
+    \begin{lstlisting}
+function e = error(delimiters, X)
+    e = 0;
+    bounddelimiters = [0 delimiters size(X, 1)];
+    for j = 2:size(bounddelimiters, 2)
+        indeces = (1+bounddelimiters(j-1)):bounddelimiters(j);
+        segment = X(indeces, :);
+        centroid = sum(segment)/size(segment, 1);
+        for k = 1:size(segment, 1)
+            e = e + norm(segment(k, :)-centroid)^2;
+        end
+    end
+end\end{lstlisting}
+    
+    We can now proceed to design the segmentation algorithm. Consider the set of global minimum delimiters $\mathbf{i}^* = \{i^*_1, ..., i^*_{k-1}\}$. Observe that each $i^*_j$ is the delimiter that given $\mathbf{i}^* \setminus \{i^*_j \}$ minimises the error of $\mathbf{i}^*$. That is, each $i^*_j$ is the delimiter that minimises the error when we add it to the set of the other delimiters. We can use this observation to construct a polynomial time algorithm. 
+    \par The idea is to start with an empty set of optimal delimiters, i.e. $\mathbf{i}^*_0 = \emptyset$ where $\mathbf{i}^*_n$ denotes the set of n optimal delimiters (which produces $n+1$ segments). From our observation it follows that $\mathbf{i}^*_n = \mathbf{i}^*_{n-1} \cup \{ i^*_n \}$ where $i^*_n$ is the delimiter that minimises the error of $\mathbf{i}^*_{n-1} \cup \{ i_n \}$. This easily translates to a recursive algorithm:
+    
+    \begin{lstlisting}
+function delimiters = segmentation(X, k)
+    delimitercount = k-1;
+    if delimitercount <= 0
+        delimiters = [];
+        return;
+    end
+    
+    delimiters = segmentation(X, k-1);
+    mindelimiters = [];
+    for i = 1:(size(X,1) - 1)
+        newdelimiters = sort([delimiters i]);
+        if error(newdelimiters, X) < error(mindelimiters, X)
+            mindelimiters = newdelimiters;
+        end
+    end
+    delimiters = mindelimiters;
+end\end{lstlisting}
+
+    \textbf{Informal argument of time complexity}: The running time is polynomial in $l$, $n$, and $k$. The the recursive call is performed $k-1$ times. At each recursive call, a loop iterates $l$ times, at each iteration calling the error function. The error function has two nested loops iterating over the $k$ segments delimiters and each of the, on average, $l/k$ points in each segment. It is assumed that the summation function used in the error function has a complexity of $O(l\times n)$. Without going in further detail it seems that the running time is around $O(k \times n \times l^2)$ (may be different under certain conditions such as $k \times \log k > n \times l$ in which case sorting the delimiters has higher complexity than calculating the error) and definitely not larger than polynomial in $k$, $n$, and $l$.
+    
 
 \subsection{(p, k)-means}
 
