@@ -273,32 +273,111 @@ function e = error(delimiters, X)
     end
 end\end{lstlisting}
     
-    We can now proceed to design the segmentation algorithm. Consider the set of global minimum delimiters $\mathbf{i}^* = \{i^*_1, ..., i^*_{k-1}\}$. Observe that each $i^*_j$ is the delimiter that given $\mathbf{i}^* \setminus \{i^*_j \}$ minimises the error of $\mathbf{i}^*$. That is, each $i^*_j$ is the delimiter that minimises the error when we add it to the set of the other delimiters. We can use this observation to construct a polynomial time algorithm. 
-    \par The idea is to start with an empty set of optimal delimiters, i.e. $\mathbf{i}^*_0 = \emptyset$ where $\mathbf{i}^*_n$ denotes the set of n optimal delimiters (which produces $n+1$ segments). From our observation it follows that $\mathbf{i}^*_n = \mathbf{i}^*_{n-1} \cup \{ i^*_n \}$ where $i^*_n$ is the delimiter that minimises the error of $\mathbf{i}^*_{n-1} \cup \{ i_n \}$. This easily translates to a recursive algorithm:
+    We can now proceed to designing  the segmentation algorithm. 
+    Let $\mathbf{i}^*_{n, k}$ be the set of segment delimiters $\{ i^*_1, ..., i^*_{k-1} \}$ that minimises the error of segmenting the points $x_1, ..., x_n$ into $k$ segments. The key observation for construction of a polynomial time algorithm is that $\mathbf{i}^*_{n,k}$ can be described as
+    \begin{equation}
+    \begin{split}
+        \mathbf{i}^*_{n,k} &= \mathbf{i}^*_{j, k-1} \cup \{ j \} \text{ where } \\
+        j &= \argmin_{1 \leq j < n} (E(\mathbf{i}^*_{j, k-1} \cup \{ j \} ))
+    \end{split}
+    \end{equation}
+    
+    Here $E$ denotes the error function of the segmentation produced a set of delimiters. From this observation we can construct a dynamic programming algorithm that builds a matrix of the optimal segmentations and a matrix of their errors. When the algorithm has reached the optimal segmentation $\mathbf{i}^*_{n,k}$ we have found the solution. The Matlab implementation of the algorithm is listed here:
     
     \begin{lstlisting}
 function delimiters = segmentation(X, k)
-    delimitercount = k-1;
-    if delimitercount <= 0
-        delimiters = [];
-        return;
+    % E(i, k) represents the minimum error of segmenting
+    % X(1:i, :) into k segments.
+    E = [];
+    
+    % D(i, j) stores the jth delimiter that segments X(1:i, :)  
+    % into the optimal j+1 segments.
+    D = [];
+    
+    % We initialise E's first column (error of a single 
+    % segment over the points X(1:i, :))
+    for i = 1:size(X, 1)
+        E(i,1) = error([], X(1:i, :));
     end
     
-    delimiters = segmentation(X, k-1);
-    mindelimiters = [];
-    for i = 1:(size(X,1) - 1)
-        newdelimiters = sort([delimiters i]);
-        if error(newdelimiters, X) < error(mindelimiters, X)
-            mindelimiters = newdelimiters;
+    % We then proceed to filling out each entry in E until
+    % we have reached our objective (the minimum k 
+    % segmentation of all points in X).
+    for i = 1:size(X, 1)
+        for l = 2:min(i, k)
+            % Find min error of segmenting x_1, ..., x_i 
+            % into l segments
+            minerror = Inf;
+            for j = 1:(i-1)
+                if j >= l
+                    e = E(j, l-1) + error([], X((j+1):i, :));
+                    if e < minerror
+                        minerror = e;
+                        D(i, l) = j; % Store delimiter
+                    end
+                end
+            end
+            E(i, l) = minerror;
         end
     end
-    delimiters = mindelimiters;
+    
+    % We retrieve the optimal delimiters from D
+    delimiters = [];
+    delimiter = size(X, 1);
+    for i = k:-1:2
+       delimiter = D(delimiter, i);
+       delimiters = [delimiters delimiter];
+    end
+    delimiters = sort(delimiters)
 end\end{lstlisting}
 
-    \textbf{Informal argument of time complexity}: The running time is polynomial in $l$, $n$, and $k$. The the recursive call is performed $k-1$ times. At each recursive call, a loop iterates $l$ times, at each iteration calling the error function. The error function has two nested loops iterating over the $k$ segments delimiters and each of the, on average, $l/k$ points in each segment. It is assumed that the summation function used in the error function has a complexity of $O(l\times n)$. Without going in further detail it seems that the running time is around $O(k \times n \times l^2)$ (may be different under certain conditions such as $k \times \log k > n \times l$ in which case sorting the delimiters has higher complexity than calculating the error) and definitely not larger than polynomial in $k$, $n$, and $l$.
+    \textbf{Informal argument of time complexity}: The running time is polynomial in $l$, $n$, and $k$ since the algorithm simply consists of nested loops running over $l$ and $k$. In the inner most loop, the error function is called, which is similarly polynomial in complexity in $k$ and $l$ but also $n$ (since we sum over the points). The complexity of the algorithm can therefore be bounded above by a constant multiple of some polynomial in $n$, $l$, and $k$.
     
 
 \subsection{(p, k)-means}
+    
+    We derive the minimiser of the objective for each $C_i$ in the same way as with the squared distance. We let the derivative with respect to $\mathbf{c}_k$ be equal to zero and solve for $\mathbf{c}_k$. We start by finding the derivative with respect to $\mathbf{c}_k$. 
+    
+    \begin{equation} \label{eq:5}
+        \frac{\delta}{\delta \mathbf{c}_k} \sum_{i=1}^k \sum_{\mathbf{x} \in C_i} d_p (\mathbf{c}_i, \mathbf{x}) = \sum_{\mathbf{x} \in C_k} \frac{\delta}{\delta \mathbf{c}_k} d_p(\mathbf{c}_k, \mathbf{x})
+    \end{equation}
+    
+    We assume that the components of the inputs are nonnegative and obtain
+    \begin{equation}
+    \begin{split}
+        \frac{\delta}{\delta \mathbf{c}_k} d_p(\mathbf{c}_k, \mathbf{x}) &= \frac{\delta}{\delta \mathbf{c}_k} (\sum_{i=1}^n \mathbf{c}_{k,i}^p - \mathbf{x}_i^p - p(\mathbf{c}_{k,i} - \mathbf{x}_i) \mathbf{x}_i^{p-1} )\\
+        &= p \mathbf{c}_k^{p-1} - p \mathbf{x}^{p-1}
+    \end{split}
+    \end{equation}
+    
+    Where $\mathbf{x}^n$ denotes that each component of $\mathbf{x}$ is raised to the $n$th power. Inserting back in (\ref{eq:5}) and setting this equal to zero, we can now solve for $\mathbf{c}_k$
+    
+    \begin{equation}
+    \begin{split}
+        \sum_{\mathbf{x} \in C_k} (p \mathbf{c}_k^{p-1} - p \mathbf{x}^{p-1}) &= 0\\
+        \implies \sum_{\mathbf{x} \in C_k} \mathbf{c}_k^{p-1} &= \sum_{\mathbf{x} \in C_k} \mathbf{x}^{p-1}\\
+        \implies \mathbf{c}_k &= \sqrt[p-1]{\frac{\sum_{\mathbf{x} \in C_k} \mathbf{x}^{p-1}} {|C_k|}}
+    \end{split}
+    \end{equation}
+    
+    Observe that this result is consistent with our result for the euclidean distance. We can now design the $(p, k)$-means algorithm.
+    
+    \begin{enumerate}
+        \item \textbf{for} $i = 1, ..., k$ \textbf{do}
+        \begin{equation*}
+            C_i = \{ \mathbf{x} \in x \mid i = \argmin_{1 \leq j \leq k} d_p(\mathbf{c}_j, \mathbf{x}) \}
+        \end{equation*}
+        
+        \item \textbf{for} $j = 1, ..., k$ \textbf{do}
+        \begin{equation*}
+            \mathbf{c}_j = \sqrt[p-1]{\frac{\sum_{i=1}^l r_{ij} \mathbf{x}_i^{p-1}}{\sum_{i=1}^l r_{ij}}}
+        \end{equation*}
+        
+        \item \textbf{While} not converged \textbf{go to} step 1.
+
+    \end{enumerate}
+
+    Again, $\mathbf{x}^n$ denotes that each component of $\mathbf{x}$ is raised to the $n$th power. The argument of convergence for this algorithm is similar to the argument for the standard $k$-means algorithm. That is, the objective decreases in step 1 and 2 and the objective is bounded below. Hence the algorithm converges. 
 
 \section{Appendix}
     \subsection{Movie generation code} \label{appendix:movie}
