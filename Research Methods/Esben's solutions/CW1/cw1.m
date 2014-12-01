@@ -36,3 +36,20 @@ hold on
 grid on
 hold off
 
+%% Advanced
+domain = [-1:0.01:3];
+range = arrayfun(@(x) abs(x-1)^3, domain);
+
+plot(domain, range);
+
+%%
+domain = [-1:0.01:3];
+range = arrayfun(@(x) sqrt(abs(x-1)), domain);
+
+plot(domain, range);
+
+%%
+domain = [-1:0.01:1];
+range = arrayfun(@(x) x^4 + 5*x^2, domain);
+plot(domain, range);
+

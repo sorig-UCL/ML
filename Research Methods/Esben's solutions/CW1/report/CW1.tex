@@ -140,10 +140,34 @@ hold off
 
 \section{Convergence of Gradient Descent in a Single Variable}
 \begin{itemize}
-    \item[a)]
-    \item[b)]
-    \item[c)]
-    \item[d)]
+    \item[a)] We can plot the function to get an intuition.
+        \begin{lstlisting}
+domain = [-1:0.01:3];
+range = arrayfun(@(x) abs(x-1)^3, domain);
+
+plot(domain, range);\end{lstlisting}
+        and we get
+        \begin{center}
+        \includegraphics[width=\linewidth]{3a}
+        \end{center}
+        
+        The function is clearly convex and gradient descent will converge for any $x_0$ and a small step size, say $\lambda = 0.01$.
+
+    \item[b)] Again, we plot the function
+    \begin{lstlisting}
+domain = [-1:0.01:3];
+range = arrayfun(@(x) sqrt(abs(x-1)), domain);
+
+plot(domain, range);\end{lstlisting}
+        And obtain
+        \begin{center}
+        \includegraphics[width=\linewidth]{3b}
+        \end{center}
+        
+        This function is clearly not convex and gradient descent will not converge for any $x_0$ and $\lambda$ unless $x_0 = 1$.
+    
+    
+    \item[c)] $x^4 + 5x^2$ is a convex function with one minimum. We can show this by observing that $x^4$ is convex and $x^2$ is convex and $x^4 + 5x^2$ is therefore a convex combination of two convex functions. Therefore gradient descent will converge.
 \end{itemize}
 
 
